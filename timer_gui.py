@@ -16,7 +16,7 @@ class TimerApp(QWidget):
         self.setGeometry(100, 100, 300, 200)
         
         # Create a Timer instance with 10 seconds for testing
-        self.timer = Timer(0.1)
+        self.timer = Timer(1)
         
         # Set up UI components
         self.init_ui()
@@ -28,7 +28,11 @@ class TimerApp(QWidget):
     def init_ui(self):
         # Layout
         self.layout = QVBoxLayout()
-        
+        self.setStyleSheet("""
+            background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #fae1dd, stop:1 #f8edeb);
+            border-radius: 15px;
+            color: #495057;
+        """)
         # Time Label
         self.time_label = QLabel(f"{self.timer.format_time(self.timer.focus_time)}", self)
         self.layout.addWidget(self.time_label)
