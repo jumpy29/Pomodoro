@@ -3,16 +3,20 @@ from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton
 import sys
 from timer import Timer  # Your Timer class from earlier
+from pygame import mixer
 
 class TimerApp(QWidget):
     def __init__(self):
         super().__init__()
+        mixer.init()
+
+        self.sound_filename = "timer_end.mp3"
         
         self.setWindowTitle("Pomodoro Timer")
         self.setGeometry(100, 100, 300, 200)
         
         # Create a Timer instance with 10 seconds for testing
-        self.timer = Timer(1)
+        self.timer = Timer(0.1)
         
         # Set up UI components
         self.init_ui()
@@ -56,6 +60,7 @@ class TimerApp(QWidget):
         self.time_label.setText(f"{time}")
     
     def start_timer(self):
+        mixer.music.stop()
         self.timer.start_timer()
     
     def stop_timer(self):
@@ -68,7 +73,13 @@ class TimerApp(QWidget):
         self.time_label.setText(f"{formatted_time}") 
     
     def on_timer_finished(self):
-        self.time_label.setText("00:00")
+        self.reset_timer()
+        self.play_sound()
+
+    def play_sound(self):
+        mixer.music.load(self.sound_filename)
+        mixer.music.play()
+
 
 def main():
     app = QApplication(sys.argv)  # PyQt's event loop for signals/slots
