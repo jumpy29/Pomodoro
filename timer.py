@@ -34,7 +34,6 @@ class Timer(QObject):
         if not self.timer_running:
             self.timer.start()
             self.timer_running = True
-            print("timer started")
 
     def update_time(self):
         """
@@ -44,12 +43,11 @@ class Timer(QObject):
             self.time_left-=1 
             formatted_time = self.format_time(self.time_left)
             self.time_updated.emit(formatted_time) #emits the updated time
-            print(f"Time left: {formatted_time}")
         else:
             self.timer.stop()
             self.timer_running = False
             self.timer_finished.emit() #emits signal when timer finished
-            print("timer finished")
+
 
     def stop_timer(self):
         """
@@ -68,4 +66,4 @@ class Timer(QObject):
         self.time_left = self.focus_time
         formatted_time = self.format_time(self.time_left)
         self.time_updated.emit(formatted_time) #signals the new updated time
-        print(f"timer resetted to {formatted_time}")
+
