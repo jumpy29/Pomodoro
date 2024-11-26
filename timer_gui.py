@@ -10,7 +10,8 @@ class TimerApp(QWidget):
         super().__init__()
         mixer.init()
 
-        self.sound_filename = "timer_end.mp3"
+        self.bell_sound_filename = "timer_end.mp3"
+        self.toggle_sound_filename = "toggle_sound.mp3"
         
         self.setWindowTitle("Pomodoro Timer")
         self.setGeometry(0, 0, 350, 250)
@@ -41,12 +42,12 @@ class TimerApp(QWidget):
         self.time_label.setFont(QFont("Courier New", 48, QFont.Weight.Bold))
         self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)  # Aligning to center
         
-        # Start Button
-        self.start_button = QPushButton("Start", self)
-        self.start_button.clicked.connect(self.start_timer)
-        self.layout.addWidget(self.start_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
-        self.start_button.setFixedSize(100, 40)
-        self.start_button.setStyleSheet(
+        # Start and stop Button
+        self.start_stop_button = QPushButton("Start", self)
+        self.start_stop_button.clicked.connect(self.button_toggled)
+        self.layout.addWidget(self.start_stop_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+        self.start_stop_button.setFixedSize(100, 40)
+        self.start_stop_button.setStyleSheet(
             """
             QPushButton{
             background: #495057;
@@ -54,13 +55,15 @@ class TimerApp(QWidget):
             }
         """)
         
-        # Stop Button
-        self.stop_button = QPushButton("Stop", self)
-        self.stop_button.clicked.connect(self.stop_timer)
-        self.layout.addWidget(self.stop_button)
-        
         # Set layout
         self.setLayout(self.layout)
+
+    def button_toggled(self):
+        if self.timer.timer_running:
+            self.stop_timer()
+        else: 
+            self.start_timer()
+        self.play_toggle_sound()
     
     def update_time_label(self, time):
         # Update the label text with the formatted time
@@ -69,19 +72,27 @@ class TimerApp(QWidget):
     def start_timer(self):
         mixer.music.stop()
         self.timer.start_timer()
+        self.start_stop_button.setText("Stop")
+        self.start_stop_button.setFixedSize(95, 35)
     
     def stop_timer(self):
         self.timer.stop_timer()
+        self.start_stop_button.setText("Start")
+        self.start_stop_button.setFixedSize(100, 40)
 
     def on_timer_finished(self):
         self.timer.stop_timer()  # Stop the timer when finished
         self.timer.time_left = self.timer.focus_time  # Reset to initial time
         formatted_time = self.timer.format_time(self.timer.time_left)
         self.time_label.setText(f"{formatted_time}")
-        self.play_sound()
+        self.play_bell_sound()
 
-    def play_sound(self):
-        mixer.music.load(self.sound_filename)
+    def play_bell_sound(self):
+        mixer.music.load(self.bell_sound_filename)
+        mixer.music.play()
+    
+    def play_toggle_sound(self):
+        mixer.music.load(self.toggle_sound_filename)
         mixer.music.play()
 
 
