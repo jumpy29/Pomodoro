@@ -43,27 +43,25 @@ class TimerApp(QWidget):
         self.mode_switch_layout.setContentsMargins(0, 0, 0, 0)  #same reason as above
 
         self.focus_button = QPushButton("Focus", self)
-        #self.focus_button.clicked.connect(self.focus_button_clicked)
+        self.focus_button.setFixedWidth(100)
+        self.focus_button.clicked.connect(self.focus_button_clicked)
         self.focus_button.setStyleSheet(
             """
             QPushButton{
             background: #495057;
             color: #fae1dd;
-            border-top-right-radius: 0px;
-            border-bottom-right-radius: 0px;
             }
         """)
         self.mode_switch_layout.addWidget(self.focus_button)
 
         self.break_button = QPushButton("Break", self)
-        #self.break_button.clicked.connect(self.break_button_clicked)
+        self.break_button.setFixedWidth(100)
+        self.break_button.clicked.connect(self.break_button_clicked)
         self.break_button.setStyleSheet(
             """
             QPushButton{
             background: #495057;
             color: #fae1dd;
-            border-top-left-radius: 0px;
-            border-bottom-left-radius: 0px;
             }
         """)
         self.mode_switch_layout.addWidget(self.break_button)
@@ -101,11 +99,16 @@ class TimerApp(QWidget):
             self.start_timer()
         self.play_toggle_sound()
 
-    #def focus_button_clicked(self):
-        #TODO:
+    def focus_button_clicked(self):
+        self.timer.set_time(self.focus_time)
+        self.play_toggle_sound()
+        self.update_button_after_stopped() #updating text and size of button
 
-    #def break_button_clicked(self):
-        #TODO:
+    def break_button_clicked(self):
+        self.timer.set_time(self.break_time)
+        self.play_toggle_sound()
+        self.update_button_after_stopped() #updating text and size of button
+        
     
     def update_time_label(self, time):
         # Update the label text with the formatted time
@@ -114,19 +117,30 @@ class TimerApp(QWidget):
     def start_timer(self):
         mixer.music.stop()
         self.timer.start_timer()
-        self.start_stop_button.setText("Stop")
-        self.start_stop_button.setFixedSize(95, 35)
+        self.update_button_after_started() #updateing button
     
     def stop_timer(self):
         self.timer.stop_timer()
+        self.update_button_after_stopped() #updating button
+
+    def reset_timer(self):
+        self.timer.reset_timer()
+
+    def update_button_after_stopped(self):
+        #updates button after timer stops
         self.start_stop_button.setText("Start")
         self.start_stop_button.setFixedSize(100, 40)
 
+    def update_button_after_started(self):
+        #updates button after timer starts
+        self.start_stop_button.setText("Stop")
+        self.start_stop_button.setFixedSize(95, 35)
+
     def on_timer_finished(self):
-        self.timer.stop_timer()  # Stop the timer when finished
-        self.timer.time_left = self.timer.focus_time  # Reset to initial time
+        self.stop_timer()  
+        self.reset_timer() 
         formatted_time = self.timer.format_time(self.timer.time_left)
-        self.time_label.setText(f"{formatted_time}")
+        self.time_label.setText(f"{formatted_time}") #updating time
         self.play_bell_sound()
 
     def play_bell_sound(self):
