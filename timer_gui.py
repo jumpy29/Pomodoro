@@ -6,8 +6,12 @@ from timer import Timer  # Your Timer class from earlier
 from pygame import mixer
 from settings import SettingsWindow
 
-FOCUS_TIME = 0
+#file data index
+FOCUS_TIME = 0 
 BREAK_TIME = 1
+
+FOCUS_MODE = True
+BREAK_MODE = False
 
 class TimerApp(QWidget):
     def __init__(self):
@@ -25,6 +29,7 @@ class TimerApp(QWidget):
         self.load_custom_times() #loading custom times if they exist
 
         self.timer = Timer(self.focus_time)
+        self.mode = FOCUS_MODE  #determines which mode is being used : true if focus, false if break mode
         
         # Set up UI components
         self.init_ui()
@@ -62,13 +67,6 @@ class TimerApp(QWidget):
         self.break_button = QPushButton("Break", self)
         self.break_button.setFixedWidth(100)
         self.break_button.clicked.connect(self.break_button_clicked)
-        self.break_button.setStyleSheet(
-            """
-            QPushButton{
-            background: #495057;
-            color: #fae1dd;
-            }
-        """)
         self.mode_switch_layout.addWidget(self.break_button)
 
         self.layout.addLayout(self.mode_switch_layout)    
@@ -111,14 +109,43 @@ class TimerApp(QWidget):
         self.play_toggle_sound()
 
     def focus_button_clicked(self):
+        self.mode = FOCUS_MODE
         self.timer.set_time(self.focus_time)
         self.play_toggle_sound()
         self.update_button_after_stopped() #updating text and size of button
+        self.break_button.setStyleSheet("""
+            QPushButton{
+                background: #fae1dd;
+                color: #495057            
+            }
+        """)
+        self.focus_button.setStyleSheet(
+            """
+            QPushButton{
+            background: #495057;
+            color: #fae1dd;
+            }
+        """)
 
     def break_button_clicked(self):
+        self.mode = BREAK_MODE
         self.timer.set_time(self.break_time)
         self.play_toggle_sound()
         self.update_button_after_stopped() #updating text and size of button
+        self.focus_button.setStyleSheet("""
+            QPushButton{
+                background: #fae1dd;
+                color: #495057            
+            }
+        """)
+        self.break_button.setStyleSheet(
+            """
+            QPushButton{
+            background: #495057;
+            color: #fae1dd;
+            }
+        """)
+        
     
     def settings_clicked(self):
         self.settings_window = SettingsWindow(self, self.focus_time, self.break_time)
