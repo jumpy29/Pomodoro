@@ -1,9 +1,10 @@
 from PyQt6.QtCore import QCoreApplication, Qt, QTimer
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QFont, QIcon
 from PyQt6.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QPushButton
 import sys
 from timer import Timer  # Your Timer class from earlier
 from pygame import mixer
+from settings import SettingsWindow
 
 class TimerApp(QWidget):
     def __init__(self):
@@ -12,6 +13,7 @@ class TimerApp(QWidget):
 
         self.bell_sound_filename = "timer_end.mp3"
         self.toggle_sound_filename = "toggle_sound.mp3"
+        self.settings_icon = "settings.png"
         
         self.setWindowTitle("Pomodoro Timer")
         self.setGeometry(0, 0, 350, 250)
@@ -78,21 +80,27 @@ class TimerApp(QWidget):
         
         # Start and stop Button
         self.start_stop_button = QPushButton("Start", self)
-        self.start_stop_button.clicked.connect(self.start_stop_toggled)
+        self.start_stop_button.clicked.connect(self.start_stop_clicked)
         self.layout.addWidget(self.start_stop_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
         self.start_stop_button.setFixedSize(100, 40)
         self.start_stop_button.setStyleSheet(
             """
             QPushButton{
             background: #495057;
-            color: #fae1dd
+            color: #fae1dd;
             }
         """)
+
+        #settings button
+        self.settings_button = QPushButton()
+        self.settings_button.setIcon(QIcon(self.settings_icon))
+        self.settings_button.clicked.connect(self.settings_clicked)
+        self.layout.addWidget(self.settings_button)
         
         # Set layout
         self.setLayout(self.layout)
 
-    def start_stop_toggled(self):
+    def start_stop_clicked(self):
         if self.timer.timer_running:
             self.stop_timer()
         else: 
@@ -108,6 +116,9 @@ class TimerApp(QWidget):
         self.timer.set_time(self.break_time)
         self.play_toggle_sound()
         self.update_button_after_stopped() #updating text and size of button
+    
+    def settings_clicked(self):
+        pass
         
     
     def update_time_label(self, time):
