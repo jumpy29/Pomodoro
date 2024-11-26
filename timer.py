@@ -67,3 +67,7 @@ class Timer(QObject):
         formatted_time = self.format_time(self.time_left)
         self.time_updated.emit(formatted_time) #signals the new updated time
 
+    def set_time(self, new_time):
+        self.focus_time = new_time*60
+        self.reset_timer()
+
