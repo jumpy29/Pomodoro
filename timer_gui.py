@@ -6,6 +6,9 @@ from timer import Timer  # Your Timer class from earlier
 from pygame import mixer
 from settings import SettingsWindow
 
+FOCUS_TIME = 0
+BREAK_TIME = 1
+
 class TimerApp(QWidget):
     def __init__(self):
         super().__init__()
@@ -14,13 +17,13 @@ class TimerApp(QWidget):
         self.bell_sound_filename = "timer_end.mp3"
         self.toggle_sound_filename = "toggle_sound.mp3"
         self.settings_icon = "settings.png"
+        self.time_settings_filename = "time_settings.txt"
         
         self.setWindowTitle("Pomodoro Timer")
         self.setGeometry(0, 0, 350, 250)
-        self.focus_time = 25
-        self.break_time = 5
-        
-        # Create a Timer instance with 10 seconds for testing
+
+        self.load_custom_times() #loading custom times if they exist
+
         self.timer = Timer(self.focus_time)
         
         # Set up UI components
@@ -118,8 +121,14 @@ class TimerApp(QWidget):
         self.update_button_after_stopped() #updating text and size of button
     
     def settings_clicked(self):
-        pass
-        
+        self.settings_window = SettingsWindow(self, self.focus_time, self.break_time)
+        self.settings_window.time_changed_signal.connect(self.update_timer_after_save)
+        self.settings_window.show()
+
+    def update_timer_after_save(self):
+        self.load_custom_times()
+        self.update_time_label(self.timer.format_time(self.focus_time))
+        self.timer.set_time(self.focus_time)
     
     def update_time_label(self, time):
         # Update the label text with the formatted time
@@ -162,6 +171,19 @@ class TimerApp(QWidget):
         mixer.music.load(self.toggle_sound_filename)
         mixer.music.play()
 
+    def load_custom_times(self):
+        try:
+            #reading custom times from file, if exists
+            with open(self.time_settings_filename, "r") as f:
+                #focustime and breaktime stored in focus:break format
+                custom_times = f.read().strip()
+                custom_times = custom_times.split(",")
+                self.focus_time = int(custom_times[FOCUS_TIME])
+                self.break_time = int(custom_times[BREAK_TIME])
+        except:
+            #setting defaults
+            self.focus_time = 25
+            self.break_time = 5
 
 def main():
     app = QApplication(sys.argv)  # PyQt's event loop for signals/slots

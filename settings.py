@@ -1,12 +1,12 @@
 from PyQt6.QtWidgets import (
-    QDialog, QHBoxLayout, QVBoxLayout, QLabel, QSpinBox, QPushButton, QApplication
+    QDialog, QHBoxLayout, QVBoxLayout, QLabel, QSpinBox, QPushButton
 )
-from PyQt6.QtCore import Qt
-import sys
+from PyQt6.QtCore import Qt, pyqtSignal
 
 
 class SettingsWindow(QDialog):
-    def __init__(self, parent=None):
+    time_changed_signal = pyqtSignal(int, int) #signal when new time is saved, useful to display on main window
+    def __init__(self, parent=None, focus_time=25, break_time=5):
         super().__init__(parent)
 
         self.setWindowTitle("Settings")
@@ -21,7 +21,7 @@ class SettingsWindow(QDialog):
         self.pomodoro_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.pomodoro_input = QSpinBox()
         self.pomodoro_input.setRange(1, 60)
-        self.pomodoro_input.setValue(25)  # Default value
+        self.pomodoro_input.setValue(focus_time)  
         self.pomodoro_layout.addWidget(self.pomodoro_label)
         self.pomodoro_layout.addWidget(self.pomodoro_input)
         self.pomodoro_layout.setSpacing(0)  # Reduce spacing between label and spin box
@@ -32,7 +32,7 @@ class SettingsWindow(QDialog):
         self.break_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.break_input = QSpinBox()
         self.break_input.setRange(1, 60)
-        self.break_input.setValue(5)  # Default value
+        self.break_input.setValue(break_time)
         self.break_layout.addWidget(self.break_label)
         self.break_layout.addWidget(self.break_input)
         self.break_layout.setSpacing(0)  # Reduce spacing between label and spin box
@@ -55,7 +55,10 @@ class SettingsWindow(QDialog):
         self.main_layout.setAlignment(self.save_button, Qt.AlignmentFlag.AlignCenter)
 
     def save_settings(self):
-        pass 
-        #TODO:
-
+        focus_time = int(self.pomodoro_input.text())
+        break_time = int(self.break_input.text())
+        with open("time_settings.txt", "w") as f:
+            f.write(f"{focus_time},{break_time}")
+        self.time_changed_signal.emit(focus_time, break_time)
+        self.close()
 
