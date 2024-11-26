@@ -1,6 +1,6 @@
 from PyQt6.QtCore import QCoreApplication, Qt, QTimer
 from PyQt6.QtGui import QFont
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton
+from PyQt6.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QPushButton
 import sys
 from timer import Timer  # Your Timer class from earlier
 from pygame import mixer
@@ -15,9 +15,11 @@ class TimerApp(QWidget):
         
         self.setWindowTitle("Pomodoro Timer")
         self.setGeometry(0, 0, 350, 250)
+        self.focus_time = 25
+        self.break_time = 5
         
         # Create a Timer instance with 10 seconds for testing
-        self.timer = Timer(1)
+        self.timer = Timer(self.focus_time)
         
         # Set up UI components
         self.init_ui()
@@ -34,6 +36,40 @@ class TimerApp(QWidget):
             border-radius: 5px;
             color: #495057;
         """)
+
+        #mode switch (focus/break)
+        self.mode_switch_layout = QHBoxLayout()
+        self.mode_switch_layout.setSpacing(0)  #bcs i want no space bw buttons
+        self.mode_switch_layout.setContentsMargins(0, 0, 0, 0)  #same reason as above
+
+        self.focus_button = QPushButton("Focus", self)
+        #self.focus_button.clicked.connect(self.focus_button_clicked)
+        self.focus_button.setStyleSheet(
+            """
+            QPushButton{
+            background: #495057;
+            color: #fae1dd;
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+            }
+        """)
+        self.mode_switch_layout.addWidget(self.focus_button)
+
+        self.break_button = QPushButton("Break", self)
+        #self.break_button.clicked.connect(self.break_button_clicked)
+        self.break_button.setStyleSheet(
+            """
+            QPushButton{
+            background: #495057;
+            color: #fae1dd;
+            border-top-left-radius: 0px;
+            border-bottom-left-radius: 0px;
+            }
+        """)
+        self.mode_switch_layout.addWidget(self.break_button)
+
+        self.layout.addLayout(self.mode_switch_layout)    
+
         # Time Label
         self.time_label = QLabel(f"{self.timer.format_time(self.timer.focus_time)}", self)
         self.layout.addWidget(self.time_label)
@@ -44,7 +80,7 @@ class TimerApp(QWidget):
         
         # Start and stop Button
         self.start_stop_button = QPushButton("Start", self)
-        self.start_stop_button.clicked.connect(self.button_toggled)
+        self.start_stop_button.clicked.connect(self.start_stop_toggled)
         self.layout.addWidget(self.start_stop_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
         self.start_stop_button.setFixedSize(100, 40)
         self.start_stop_button.setStyleSheet(
@@ -58,12 +94,18 @@ class TimerApp(QWidget):
         # Set layout
         self.setLayout(self.layout)
 
-    def button_toggled(self):
+    def start_stop_toggled(self):
         if self.timer.timer_running:
             self.stop_timer()
         else: 
             self.start_timer()
         self.play_toggle_sound()
+
+    #def focus_button_clicked(self):
+        #TODO:
+
+    #def break_button_clicked(self):
+        #TODO:
     
     def update_time_label(self, time):
         # Update the label text with the formatted time
