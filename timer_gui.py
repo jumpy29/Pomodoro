@@ -9,7 +9,7 @@ from stats_window import StatsDashboard
 from stats_dao import StatsDao
 from datetime import datetime
 from math import floor
-from colors import PRIMARY, SECONDARY
+from colors import PRIMARY, SECONDARY, change_to_blue, change_to_pink, change_to_purple, change_to_red, change_to_wood, STAT_COLOR
 
 
 # File data index
@@ -66,6 +66,7 @@ class TimerApp(QMainWindow):
         # Connect signals to functions
         self.timer.time_updated.connect(self.update_time_label)
         self.timer.timer_finished.connect(self.on_timer_finished)
+        self.stats_page.back_button_signal.connect(self.back_button_clicked)
 
     def create_timer_page(self):
         timer_page = QWidget()
@@ -131,7 +132,67 @@ class TimerApp(QMainWindow):
     def create_settings_page(self):
         settings_window = SettingsWindow(self, self.focus_time, self.break_time)
         settings_window.time_changed_signal.connect(self.update_timer_after_save)
+        settings_window.blue_theme_signal.connect(self.change_theme_blue)
+        settings_window.pink_theme_signal.connect(self.change_theme_pink)
+        settings_window.red_theme_signal.connect(self.change_theme_red)
+        settings_window.purple_theme_signal.connect(self.change_theme_purple)
+        settings_window.wood_theme_signal.connect(self.change_theme_wood)
         return settings_window
+    
+    def change_theme_red(self):
+        change_to_wood()
+        from colors import PRIMARY_RED, SECONDARY_RED, STAT_COLOR_RED
+        global PRIMARY, SECONDARY, STAT_COLOR
+        PRIMARY = PRIMARY_RED
+        SECONDARY = SECONDARY_RED
+        STAT_COLOR = STAT_COLOR_RED
+        self.play_toggle_sound()
+        self.apply_styles()
+        self.settings_page.red_theme.setFixedSize(33, 33)
+
+    def change_theme_pink(self):
+        change_to_wood()
+        from colors import PRIMARY_PINK, SECONDARY_PINK, STAT_COLOR_PINK
+        global PRIMARY, SECONDARY, STAT_COLOR
+        PRIMARY = PRIMARY_PINK
+        SECONDARY = SECONDARY_PINK
+        STAT_COLOR = STAT_COLOR_PINK
+        self.play_toggle_sound()
+        self.apply_styles()
+        self.settings_page.pink_theme.setFixedSize(33, 33)
+
+    def change_theme_purple(self):
+        change_to_wood()
+        from colors import PRIMARY_PURPLE, SECONDARY_PURPLE, STAT_COLOR_PURPLE
+        global PRIMARY, SECONDARY, STAT_COLOR
+        PRIMARY = PRIMARY_PURPLE
+        SECONDARY = SECONDARY_PURPLE
+        STAT_COLOR = STAT_COLOR_PURPLE
+        self.play_toggle_sound()
+        self.apply_styles()
+        self.settings_page.purple_theme.setFixedSize(33, 33)
+
+    def change_theme_wood(self):
+        change_to_wood()
+        from colors import PRIMARY_WOOD, SECONDARY_WOOD, STAT_COLOR_WOOD
+        global PRIMARY, SECONDARY, STAT_COLOR
+        PRIMARY = PRIMARY_WOOD
+        SECONDARY = SECONDARY_WOOD
+        STAT_COLOR = STAT_COLOR_WOOD
+        self.play_toggle_sound()
+        self.apply_styles()
+        self.settings_page.wood_theme.setFixedSize(33, 33)
+    
+    def change_theme_blue(self):
+        change_to_blue()
+        from colors import PRIMARY_BLUE, SECONDARY_BLUE, STAT_COLOR_BLUE
+        global PRIMARY, SECONDARY, STAT_COLOR
+        PRIMARY = PRIMARY_BLUE
+        SECONDARY = SECONDARY_BLUE
+        STAT_COLOR = STAT_COLOR_BLUE
+        self.play_toggle_sound()
+        self.apply_styles()
+        self.settings_page.blue_theme.setFixedSize(33, 33)
     
     def create_stats_page(self):
         stats_page = StatsDashboard()
@@ -196,7 +257,7 @@ class TimerApp(QMainWindow):
         str_month_time = str(floor(month_total_time/60))+'h'+str(month_total_time%60) + 'm'
 
         best_monthly_stat = self.stats_dao.get_best_time_in_month(datetime.now().strftime("%Y-%m"))
-        best_date = best_monthly_stat[0]
+        best_date = "MONTH BEST:\n" + best_monthly_stat[0][:6] 
         best_time = best_monthly_stat[1]
         str_best_time = str(floor(best_time/60))+'h'+str(best_time%60)+'m'
     
@@ -207,6 +268,9 @@ class TimerApp(QMainWindow):
 
 
         self.central_widget.setCurrentIndex(STATS_PAGE)
+
+    def back_button_clicked(self):
+        self.central_widget.setCurrentIndex(MAIN_PAGE)
 
     def update_timer_after_save(self):
         self.load_custom_times()
@@ -302,6 +366,62 @@ class TimerApp(QMainWindow):
             }}
         """)
 
+        self.settings_page.setStyleSheet(f"""
+            background: {PRIMARY};
+            border-radius: 5px;
+            color: {SECONDARY};
+        """)
+
+        self.stats_page.today_focus_label.setStyleSheet(f'''
+            color: {STAT_COLOR};
+            font-size: 26px;
+        ''')
+
+        self.stats_page.monthly_best_focus_label.setStyleSheet(f'''
+            color: {STAT_COLOR};
+            font-size: 26px;
+        ''')
+
+        self.stats_page.total_monthly_focus.setStyleSheet(f'''
+            color: {STAT_COLOR};
+            font-size: 26px;
+            font-weight: bold;
+            
+        ''')
+
+        self.settings_page.break_input.setStyleSheet(f'''
+            QSpinBox{{
+            background: {SECONDARY};
+            color: {PRIMARY};
+            text-align: center;
+            }}
+        ''')
+
+        self.settings_page.pomodoro_input.setStyleSheet(f'''
+            QSpinBox{{
+            background: {SECONDARY};
+            color: {PRIMARY};
+            text-align: center;
+            }}
+        ''')
+
+        self.settings_page.save_button.setStyleSheet(f'''
+            QPushButton{{
+            background: {SECONDARY};
+            color: {PRIMARY};
+            text-align: center;
+            }}
+        ''')
+
+        self.resize_color_boxes()
+    
+    def resize_color_boxes(self):
+        box_size = 25
+        self.settings_page.blue_theme.setFixedSize(box_size, box_size)
+        self.settings_page.pink_theme.setFixedSize(box_size, box_size)
+        self.settings_page.purple_theme.setFixedSize(box_size, box_size)
+        self.settings_page.red_theme.setFixedSize(box_size, box_size)
+        self.settings_page.wood_theme.setFixedSize(box_size, box_size)
 
 def main():
     app = QApplication(sys.argv)

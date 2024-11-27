@@ -3,7 +3,6 @@ PRIMARY = '#ECECEB' #ligher
 SECONDARY = '#189AB4' #darker
 STAT_COLOR = '#189AB4' 
 
-
 #PINK
 PRIMARY = '#fae1dd' #ligher
 SECONDARY = '#495057' #darker

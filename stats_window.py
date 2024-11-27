@@ -1,14 +1,23 @@
-from PyQt6.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel
-from PyQt6.QtCore import Qt  # For alignment flags
+from PyQt6.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QPushButton
+from PyQt6.QtCore import Qt, pyqtSignal  # For alignment flags
 from colors import PRIMARY, SECONDARY, STAT_COLOR
+from PyQt6.QtGui import QIcon
 
 class StatsDashboard(QWidget):
+    back_button_signal = pyqtSignal()
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Stats Dashboard")
+        self.back_image = "back_icon.png"
 
         # Main layout contains two sections: Daily stats on the left, Monthly stats on the right
         self.layout = QHBoxLayout()
+
+        self.back_button = QPushButton()
+        self.back_button.setIcon(QIcon(self.back_image))
+        self.back_button.setFixedWidth(15)
+        self.back_button.clicked.connect(self.back_button_clicked)
+
 
         # Daily stats section
         self.daily_stats_layout = QVBoxLayout()
@@ -19,6 +28,7 @@ class StatsDashboard(QWidget):
         self.setup_monthly_stats_layout()
     
         # Adding layouts to the main layout
+        self.layout.addWidget(self.back_button)
         self.layout.addLayout(self.daily_stats_layout)
         self.layout.addLayout(self.monthly_stats_layout)
 
@@ -108,3 +118,5 @@ class StatsDashboard(QWidget):
         # Center-align the entire monthly stats layout
         self.monthly_stats_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
+    def back_button_clicked(self):
+        self.back_button_signal.emit()

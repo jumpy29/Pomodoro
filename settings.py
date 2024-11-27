@@ -19,11 +19,12 @@ class SettingsWindow(QDialog):
         self.setWindowTitle("Settings")
         self.setGeometry(0, 0, 350, 250)
 
-        self.setStyleSheet(f"""
-            background: {PRIMARY};
-            border-radius: 5px;
-            color: {SECONDARY};
-        """)
+        #TODO:
+        # self.setStyleSheet(f"""
+        #     background: {PRIMARY};
+        #     border-radius: 5px;
+        #     color: {SECONDARY};
+        # """)
 
         # Main layout
         self.main_layout = QVBoxLayout(self)
@@ -77,9 +78,9 @@ class SettingsWindow(QDialog):
         self.themes.setContentsMargins(0, 0, 0, 0)
 
         self.blue_theme.setStyleSheet("background-color: #189AB4; border-radius: 5px;")
-        self.pink_theme.setStyleSheet("background-color: #495057; border-radius: 5px;")
-        self.purple_theme.setStyleSheet("background-color: #695E93; border-radius: 5px;")
-        self.red_theme.setStyleSheet("background-color: #FABEC0; border-radius: 5px;")
+        self.pink_theme.setStyleSheet("background-color: #F2C5E0; border-radius: 5px;")
+        self.purple_theme.setStyleSheet("background-color: #D4BBDD; border-radius: 5px;")
+        self.red_theme.setStyleSheet("background-color: #FFA384; border-radius: 5px;")
         self.wood_theme.setStyleSheet("background-color: #875F59; border-radius: 5px;")
 
         self.blue_theme.clicked.connect(self.blue_theme_clicked)
