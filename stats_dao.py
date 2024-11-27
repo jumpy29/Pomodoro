@@ -5,11 +5,15 @@ class StatsDao:
     def __init__(self):
         self.db_path = "stats.db"
         self.init_db()
+        self.current_date = datetime.now().strftime("%Y-%m-%d")
+        self.current_month = datetime.now().strftime("%Y-%m")
 
     def init_db(self):
         """Initializing db and create new stats table if doesnt exist"""
         with sqlite3.connect(self.db_path) as connection:
             cursor = connection.cursor()
+
+            #creating daily stats table
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS daily_stats(
                     date TEXT PRIMARY KEY, 
@@ -21,16 +25,27 @@ class StatsDao:
             ''')
             connection.commit()
 
+            # Creating monthly_stats table
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS monthly_stats (
+                    month TEXT PRIMARY KEY,  -- Format: YYYY-MM
+                    total_focus_count INTEGER DEFAULT 0,
+                    total_break_count INTEGER DEFAULT 0
+                    total_focus_minutes INTEGER DEFAULT 0,
+                    total_break_minutes INTEGER DEFAULT 0,
+                );
+            ''')
+
     def get_last_entry(self):
         """
-        gets the last entered data, useful for getting last day and updating 
+        gets the last entered data from daily table
         """
         with sqlite3.connect(self.db_path) as connection:
             cursor = connection.cursor()
             cursor.execute('SELECT date, focus_count, break_count, focus_minutes, break_minutes FROM daily_stats ORDER BY date DESC LIMIT 1')
             return cursor.fetchone()
     
-    def create_new_day_entry(self, date):
+    def create_new_day_entry(self):
         """
         Insert a new entry for a specific date.
         """
@@ -38,13 +53,30 @@ class StatsDao:
             cursor = connection.cursor()
             cursor.execute('''
                 INSERT INTO daily_stats (date, focus_count, break_count, focus_minutes, break_minutes) VALUES (?, ?, ?, ?, ?)
-            ''', (date, 0, 0, 0, 0))
+            ''', (self.current_date, 0, 0, 0, 0))
             connection.commit()
 
-    def update_focus_stats(self, date, cur_focus_time):
+    def create_new_month_entry(self):
+        """
+        Insert a new entry for the current month into the monthly_stats table.
+        """
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                INSERT INTO monthly_stats (month, total_focus_count, total_break_count, total_focus_minutes, total_break_minutes)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (self.current_month, 0, 0, 0, 0))  # Initial values are set to 0
+            connection.commit()
+
+    def update_focus_stats(self, cur_focus_time):
         """
         Increment the focus count and add focus minutes.
         """
+        self.update_daily_focus_stats(cur_focus_time)
+        self.update_monthly_focus_stats(cur_focus_time)
+
+    def update_daily_focus_stats(self, cur_focus_time):
+        """increment daily stats"""
         with sqlite3.connect(self.db_path) as connection:
             cursor = connection.cursor()
             cursor.execute('''
@@ -52,10 +84,29 @@ class StatsDao:
                 SET focus_count = focus_count + 1, 
                     focus_minutes = focus_minutes + ?
                 WHERE date = ?
-            ''', (cur_focus_time, date))
+            ''', (cur_focus_time, self.current_date))
             connection.commit()
 
-    def update_break_stats(self, date, cur_break_time):
+    def update_monthly_focus_stats(self, cur_focus_time):
+        """increment monthly stats"""
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                UPDATE monthly_stats
+                SET total_focus_count = total_focus_count + 1, 
+                    total_focus_minutes = total_focus_minutes + ?
+                WHERE month = ?
+            ''', (cur_focus_time, self.current_month))
+            connection.commit()
+
+
+    def update_break_stats(self, cur_break_time):
+        self.update_daily_break_stats(cur_break_time)
+        self.update_monthly_break_stats(cur_break_time)
+    
+
+    def update_daily_break_stats(self, cur_break_time):
+        """increment daily break stats"""
         with sqlite3.connect(self.db_path) as connection:
             cursor = connection.cursor()
             cursor.execute('''
@@ -63,8 +114,21 @@ class StatsDao:
                 SET break_count = break_count+1,
                     break_minutes = break_minutes + ?
                 WHERE date = ?
-            ''', (cur_break_time, date))
+            ''', (cur_break_time, self.current_date))
             connection.commit()
+
+    def update_monthly_break_stats(self, cur_break_time):
+        """increment monthly break stats"""
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                UPDATE monthly_stats
+                SET total_break_count = total_break_count+1,
+                    total_break_minutes = total_break_minutes + ?
+                WHERE month = ?
+            ''', (cur_break_time, self.current_month))
+            connection.commit()
+
     
     def get_day_stats(self, date):
         """gets stats for a particular date"""
@@ -77,7 +141,7 @@ class StatsDao:
             ''', (date,))
             return cursor.fetchone()
         
-    def get_all_stats(self):
+    def get_all_daily_stats(self):
         """Get all stats from the daily_stats table"""
         with sqlite3.connect(self.db_path) as connection:
             cursor = connection.cursor()
@@ -87,7 +151,7 @@ class StatsDao:
             ''')
             return cursor.fetchall()
         
-    def get_latest_date(self):
+    def get_last_date(self):
         """Get the date of the latest entry"""
         with sqlite3.connect(self.db_path) as connection:
             cursor = connection.cursor()
@@ -100,6 +164,18 @@ class StatsDao:
             if result:
                 return result[0]  # Return the date from the first column of the result
             return None  # returning null if no entry
+
+    def does_date_entry_exists(self, date):
+            """
+            Checks if an entry exists for a specific date.
+            """
+            with sqlite3.connect(self.db_path) as connection:
+                cursor = connection.cursor()
+                cursor.execute('''
+                    SELECT 1 FROM daily_stats WHERE date = ? LIMIT 1
+                ''', (date,))
+                result = cursor.fetchone()
+                return result is not None
 
 
 

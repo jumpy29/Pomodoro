@@ -31,7 +31,7 @@ class SettingsWindow(QDialog):
         self.break_label = QLabel("Short Break")
         self.break_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.break_input = QSpinBox()
-        self.break_input.setRange(1, 60)
+        self.break_input.setRange(1, 30)
         self.break_input.setValue(break_time)
         self.break_layout.addWidget(self.break_label)
         self.break_layout.addWidget(self.break_input)

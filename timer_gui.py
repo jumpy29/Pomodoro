@@ -1,10 +1,12 @@
-from PyQt6.QtCore import QCoreApplication, Qt, QTimer
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QIcon
 from PyQt6.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QPushButton
 import sys
 from timer import Timer  # Your Timer class from earlier
 from pygame import mixer
 from settings import SettingsWindow
+from stats_dao import StatsDao
+from datetime import datetime
 
 #file data index
 FOCUS_TIME = 0 
@@ -29,7 +31,8 @@ class TimerApp(QWidget):
         self.load_custom_times() #loading custom times if they exist
 
         self.timer = Timer(self.focus_time)
-        self.mode = FOCUS_MODE  #determines which mode is being used : true if focus, false if break mode
+        self.mode = FOCUS_MODE  
+        # self.stats_dao = StatsDao()
         
         # Set up UI components
         self.init_ui()
@@ -155,7 +158,10 @@ class TimerApp(QWidget):
     def update_timer_after_save(self):
         self.load_custom_times()
         self.update_time_label(self.timer.format_time(self.focus_time))
-        self.timer.set_time(self.focus_time)
+        if self.mode==FOCUS_MODE:
+            self.focus_button_clicked()
+        else:
+            self.break_button_clicked()
     
     def update_time_label(self, time):
         # Update the label text with the formatted time
@@ -184,10 +190,25 @@ class TimerApp(QWidget):
         self.start_stop_button.setFixedSize(95, 35)
 
     def on_timer_finished(self):
+        self.stats_dao = StatsDao()
+        current_date = datetime.now().strftime("%Y-%m-%d")
+        current_month = datetime.now().strftime("%Y-%m")
+        if not self.stats_dao.does_date_entry_exists(current_date): #if day entry does not exist then make new entry
+            self.stats_dao.current_date = current_date
+            self.stats_dao.create_new_day_entry()
+        if current_month!=self.stats_dao.current_month: #creating new month entry when new month starts
+            self.stats_dao.current_month = current_month
+            self.stats_dao.create_new_month_entry()
         self.stop_timer()  
         self.reset_timer() 
         formatted_time = self.timer.format_time(self.timer.time_left)
         self.time_label.setText(f"{formatted_time}") #updating time
+        if self.mode==FOCUS_MODE:
+            self.stats_dao.update_focus_stats(self.focus_time) #update database
+            self.break_button_clicked()
+        else:
+            self.stats_dao.update_break_stats(self.break_time) #update database
+            self.focus_button_clicked()
         self.play_bell_sound()
 
     def play_bell_sound(self):
