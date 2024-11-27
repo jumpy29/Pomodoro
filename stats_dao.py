@@ -210,8 +210,8 @@ class StatsDao:
             cursor = connection.cursor()
             cursor.execute('''
                 UPDATE monthly_stats
-                SET total_break_count = total_break_count+1,
-                    total_break_minutes = total_break_minutes + ?
+                SET total_break_count = total_focus_count+1,
+                    total_break_minutes = total_focus_minutes + ?
                 WHERE month = ?
             ''', (cur_break_time, month))
             connection.commit()
@@ -291,5 +291,44 @@ class StatsDao:
                 return result[0]  # Return the focus_minutes value from the first column
             return 0
 
+    def get_focus_on_month(self, month):
+        """Gets the total focus minutes for a specific month."""
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                SELECT total_focus_minutes 
+                FROM monthly_stats 
+                WHERE month = ?
+            ''', (month,))
+            result = cursor.fetchone()
+            if result:
+                return result[0]  # Return the focus_minutes value from the first column
+            return 0
 
+    def get_best_time_in_month(self, month):
+        """gets the date and time for the best time in a given month"""
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                SELECT date, focus_minutes
+                FROM daily_stats
+                WHERE date LIKE ?
+                ORDER BY focus_minutes DESC
+                LIMIT 1
+            ''', (month+"%",))
+            result = cursor.fetchone()
+            if result:
+                result_list = list(result)
+                result_list[0]  = self.format_date(result_list[0]).upper()
+                return result_list
+            return (datetime.now().strftime("%Y-%m"), 0)
+
+    def format_date(self, date_str):
+        # Parse the date string into a datetime object
+        date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+        
+        # Format the date into the desired output format (e.g., "29 April")
+        return date_obj.strftime("%d %B")
+
+            
 

@@ -31,18 +31,44 @@ class StatsDashboard(QWidget):
         self.monthly_best_layout = QVBoxLayout()
 
         # Widgets for "Today Stats"
-        self.today_focus_label = QLabel("0h0m\nToday Focus")
+        self.today_focus_label = QLabel("0h0m")
+        #dark pink
+        self.today_focus_label.setStyleSheet('''
+            color: #F79489;
+            font-family: 'Courier New';
+            font-size: 26px;
+            font-weight: bold;
+        ''')
         self.today_focus_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.today_label = QLabel("TODAY")
+        self.today_label.setStyleSheet('''
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        ''')
+
+        self.today_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Add widgets to today stats layout
         self.today_stats_layout.addWidget(self.today_focus_label)
+        self.today_stats_layout.addWidget(self.today_label)
 
         # Widgets for "Monthly Best"
-        self.monthly_best_focus_label = QLabel("5h10m\nMost Focus")
+        self.monthly_best_focus_label = QLabel("5h10m")
+        self.monthly_best_focus_label.setStyleSheet('''
+            color: #F79489;
+            font-family: 'Courier New';
+            font-size: 26px;
+            font-weight: bold;
+        ''')
         self.monthly_best_focus_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.monthly_best_label = QLabel("MONTHLY BEST")
+
+
+        self.monthly_best_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Add widgets to monthly best layout
         self.monthly_best_layout.addWidget(self.monthly_best_focus_label)
+        self.monthly_best_layout.addWidget(self.monthly_best_label)
 
 
         # Add sub-layouts to the daily stats layout
@@ -56,12 +82,23 @@ class StatsDashboard(QWidget):
         self.monthly_total_layout = QVBoxLayout()
 
         # Widgets for "Monthly Total"
-        self.total_monthly_focus = QLabel("10h10m\nMonth Total")
-
+        self.total_monthly_focus = QLabel("10h10m")
         self.total_monthly_focus.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
+        self.total_monthly_label = QLabel("MONTH TOTAL")
+        self.total_monthly_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.total_monthly_focus.setStyleSheet('''
+            color: #F79489;
+            font-size: 26px;
+            font-weight: bold;
+        ''')
+
+
         # Add widgets to the monthly total layout
-        self.monthly_total_layout.addWidget(self.total_monthly_focus)
+        self.monthly_total_layout.addWidget(self.total_monthly_focus)        
+        self.monthly_total_layout.addWidget(self.total_monthly_label)        
+
 
         # Add the monthly total layout to the main monthly stats layout
         self.monthly_stats_layout.addLayout(self.monthly_total_layout)

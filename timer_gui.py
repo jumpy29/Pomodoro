@@ -8,6 +8,7 @@ from settings import SettingsWindow
 from stats_window import StatsDashboard
 from stats_dao import StatsDao
 from datetime import datetime
+from math import floor
 
 # File data index
 FOCUS_TIME = 0 
@@ -198,8 +199,22 @@ class TimerApp(QMainWindow):
         self.stats_dao = StatsDao()
 
         #updating stats window
+
         time = self.stats_dao.get_focus_on_date(datetime.now().strftime("%Y-%m-%d"))
-        self.stats_page.today_focus_label.setText(str(time)+"m\nToday focus")
+        str_time = str(floor(time/60)) + 'h' + str(time%60) + 'm'
+
+        month_total_time = self.stats_dao.get_focus_on_month(datetime.now().strftime("%Y-%m"))
+        str_month_time = str(floor(month_total_time/60))+'h'+str(month_total_time%60) + 'm'
+
+        best_monthly_stat = self.stats_dao.get_best_time_in_month(datetime.now().strftime("%Y-%m"))
+        best_date = best_monthly_stat[0]
+        best_time = best_monthly_stat[1]
+        str_best_time = str(floor(best_time/60))+'h'+str(best_time%60)+'m'
+    
+        self.stats_page.today_focus_label.setText(str_time)
+        self.stats_page.total_monthly_focus.setText(str_month_time)
+        self.stats_page.monthly_best_focus_label.setText(str_best_time)
+        self.stats_page.monthly_best_label.setText(best_date)
 
 
         self.central_widget.setCurrentIndex(STATS_PAGE)
