@@ -30,9 +30,9 @@ class StatsDao:
                 CREATE TABLE IF NOT EXISTS monthly_stats (
                     month TEXT PRIMARY KEY,  -- Format: YYYY-MM
                     total_focus_count INTEGER DEFAULT 0,
-                    total_break_count INTEGER DEFAULT 0
+                    total_break_count INTEGER DEFAULT 0,
                     total_focus_minutes INTEGER DEFAULT 0,
-                    total_break_minutes INTEGER DEFAULT 0,
+                    total_break_minutes INTEGER DEFAULT 0
                 );
             ''')
 
@@ -56,6 +56,18 @@ class StatsDao:
             ''', (self.current_date, 0, 0, 0, 0))
             connection.commit()
 
+    #for debugging :FIXME:
+    def create_new_day_entry2(self, date):
+        """
+        Insert a new entry for a specific date.
+        """
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                INSERT INTO daily_stats (date, focus_count, break_count, focus_minutes, break_minutes) VALUES (?, ?, ?, ?, ?)
+            ''', (date, 0, 0, 0, 0))
+            connection.commit()
+
     def create_new_month_entry(self):
         """
         Insert a new entry for the current month into the monthly_stats table.
@@ -68,12 +80,30 @@ class StatsDao:
             ''', (self.current_month, 0, 0, 0, 0))  # Initial values are set to 0
             connection.commit()
 
+    #for debugging only remove after completion :FIXME:
+    def create_new_month_entry2(self, month):
+        """
+        Insert a new entry for the current month into the monthly_stats table.
+        """
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                INSERT INTO monthly_stats (month, total_focus_count, total_break_count, total_focus_minutes, total_break_minutes)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (month, 0, 0, 0, 0))  # Initial values are set to 0
+            connection.commit()
+
     def update_focus_stats(self, cur_focus_time):
         """
         Increment the focus count and add focus minutes.
         """
         self.update_daily_focus_stats(cur_focus_time)
         self.update_monthly_focus_stats(cur_focus_time)
+
+    #for debugging only remove after completion :FIXME:
+    def update_focus_stats2(self, date, month, cur_focus_time):
+        self.update_daily_focus_stats2(date, cur_focus_time)
+        self.update_monthly_focus_stats2(month, cur_focus_time)
 
     def update_daily_focus_stats(self, cur_focus_time):
         """increment daily stats"""
@@ -85,6 +115,19 @@ class StatsDao:
                     focus_minutes = focus_minutes + ?
                 WHERE date = ?
             ''', (cur_focus_time, self.current_date))
+            connection.commit()
+
+    #for debugging only remove after completion :FIXME:
+    def update_daily_focus_stats2(self, date, cur_focus_time):
+        """increment daily stats"""
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                UPDATE daily_stats
+                SET focus_count = focus_count + 1, 
+                    focus_minutes = focus_minutes + ?
+                WHERE date = ?
+            ''', (cur_focus_time, date))
             connection.commit()
 
     def update_monthly_focus_stats(self, cur_focus_time):
@@ -99,10 +142,28 @@ class StatsDao:
             ''', (cur_focus_time, self.current_month))
             connection.commit()
 
+    #for debugging only remove after completion :FIXME:
+    def update_monthly_focus_stats2(self,month, cur_focus_time):
+        """increment monthly stats"""
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                UPDATE monthly_stats
+                SET total_focus_count = total_focus_count + 1, 
+                    total_focus_minutes = total_focus_minutes + ?
+                WHERE month = ?
+            ''', (cur_focus_time, month))
+            connection.commit()
+
 
     def update_break_stats(self, cur_break_time):
         self.update_daily_break_stats(cur_break_time)
         self.update_monthly_break_stats(cur_break_time)
+
+    #for debugging only remove after completion :FIXME:
+    def update_break_stats2(self, date, month, cur_break_time):
+        self.update_daily_break_stats2(date, cur_break_time)
+        self.update_monthly_break_stats2(month, cur_break_time)
     
 
     def update_daily_break_stats(self, cur_break_time):
@@ -117,6 +178,19 @@ class StatsDao:
             ''', (cur_break_time, self.current_date))
             connection.commit()
 
+    #for debugging only remove after completion :FIXME:
+    def update_daily_break_stats2(self,date, cur_break_time):
+        """increment daily break stats"""
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                UPDATE daily_stats
+                SET break_count = break_count+1,
+                    break_minutes = break_minutes + ?
+                WHERE date = ?
+            ''', (cur_break_time, date))
+            connection.commit()
+
     def update_monthly_break_stats(self, cur_break_time):
         """increment monthly break stats"""
         with sqlite3.connect(self.db_path) as connection:
@@ -127,6 +201,19 @@ class StatsDao:
                     total_break_minutes = total_break_minutes + ?
                 WHERE month = ?
             ''', (cur_break_time, self.current_month))
+            connection.commit()
+    
+    #for debugging only remove after completion :FIXME:
+    def update_monthly_break_stats2(self, month, cur_break_time):
+        """increment monthly break stats"""
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                UPDATE monthly_stats
+                SET total_break_count = total_break_count+1,
+                    total_break_minutes = total_break_minutes + ?
+                WHERE month = ?
+            ''', (cur_break_time, month))
             connection.commit()
 
     
@@ -174,6 +261,18 @@ class StatsDao:
                 cursor.execute('''
                     SELECT 1 FROM daily_stats WHERE date = ? LIMIT 1
                 ''', (date,))
+                result = cursor.fetchone()
+                return result is not None
+            
+    def does_month_entry_exists(self, month):
+            """
+            Checks if an entry exists for a specific date.
+            """
+            with sqlite3.connect(self.db_path) as connection:
+                cursor = connection.cursor()
+                cursor.execute('''
+                    SELECT 1 FROM monthly_stats WHERE month = ? LIMIT 1
+                ''', (month,))
                 result = cursor.fetchone()
                 return result is not None
 

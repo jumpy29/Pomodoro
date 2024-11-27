@@ -32,7 +32,7 @@ class TimerApp(QWidget):
 
         self.timer = Timer(self.focus_time)
         self.mode = FOCUS_MODE  
-        # self.stats_dao = StatsDao()
+        
         
         # Set up UI components
         self.init_ui()
@@ -196,7 +196,7 @@ class TimerApp(QWidget):
         if not self.stats_dao.does_date_entry_exists(current_date): #if day entry does not exist then make new entry
             self.stats_dao.current_date = current_date
             self.stats_dao.create_new_day_entry()
-        if current_month!=self.stats_dao.current_month: #creating new month entry when new month starts
+        if not self.stats_dao.does_month_entry_exists(current_month): #creating new month entry when new month starts
             self.stats_dao.current_month = current_month
             self.stats_dao.create_new_month_entry()
         self.stop_timer()  

@@ -4,8 +4,14 @@ def main():
     dao = StatsDao()
     current_date = datetime.now().strftime("%Y-%m-%d")
     current_month = datetime.now().strftime("%Y-%m")
-    dao.create_new_day_entry(current_date)
-    dao.create_new_month_entry()
+    date = '2024-04-25'
+    month = '2024-04'
+    dao.create_new_day_entry2(date)
+    dao.update_break_stats2(date, month, 10)
+    dao.update_focus_stats2(date, month, 25)
+
+    
+
     
   
 
