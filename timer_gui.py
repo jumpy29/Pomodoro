@@ -2,9 +2,10 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QIcon
 from PyQt6.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QStackedWidget, QMainWindow
 import sys
-from timer import Timer  # Your Timer class from earlier
+from timer import Timer  
 from pygame import mixer
 from settings import SettingsWindow
+from stats_window import StatsDashboard
 from stats_dao import StatsDao
 from datetime import datetime
 
@@ -16,8 +17,10 @@ FOCUS_MODE = True
 BREAK_MODE = False
 
 # Widget indexes
-MAIN_PAGE = 0
+MAIN_PAGE     = 0
 SETTINGS_PAGE = 1
+STATS_PAGE    = 2
+
 
 class TimerApp(QMainWindow):
     def __init__(self):
@@ -27,6 +30,7 @@ class TimerApp(QMainWindow):
         self.bell_sound_filename = "timer_end.mp3"
         self.toggle_sound_filename = "toggle_sound.mp3"
         self.settings_icon = "settings.png"
+        self.stats_icon = "stats_icon.png"
         self.time_settings_filename = "time_settings.txt"
         
         self.setWindowTitle("Pomodoro Timer")
@@ -46,9 +50,13 @@ class TimerApp(QMainWindow):
         # Set up the Settings page
         self.settings_page = self.create_settings_page()
 
+        #seting up Stats page
+        self.stats_page = self.create_stats_page()
+
         # Add pages to the StackedWidget
         self.central_widget.addWidget(self.timer_page)        # Index 0
         self.central_widget.addWidget(self.settings_page)     # Index 1
+        self.central_widget.addWidget(self.stats_page)        # Index 2
         
         # Connect signals to functions
         self.timer.time_updated.connect(self.update_time_label)
@@ -108,12 +116,25 @@ class TimerApp(QMainWindow):
             color: #fae1dd;
             }
         """)
+        
+        #contains settings and stats button
+        self.button_layout = QHBoxLayout()
 
         # Settings Button
         self.settings_button = QPushButton()
         self.settings_button.setIcon(QIcon(self.settings_icon))
         self.settings_button.clicked.connect(self.settings_clicked)
-        layout.addWidget(self.settings_button)
+
+        self.button_layout.addWidget(self.settings_button)
+
+        #stats button
+        self.stats_button = QPushButton()
+        self.stats_button.setIcon(QIcon(self.stats_icon))
+        self.stats_button.clicked.connect(self.stats_button_clicked)
+
+        self.button_layout.addWidget(self.stats_button)
+
+        layout.addLayout(self.button_layout)
 
         return timer_page
 
@@ -121,6 +142,11 @@ class TimerApp(QMainWindow):
         settings_window = SettingsWindow(self, self.focus_time, self.break_time)
         settings_window.time_changed_signal.connect(self.update_timer_after_save)
         return settings_window
+    
+    def create_stats_page(self):
+        stats_page = StatsDashboard()
+        return stats_page
+
 
     def start_stop_clicked(self):
         if self.timer.timer_running:
@@ -167,6 +193,16 @@ class TimerApp(QMainWindow):
         
     def settings_clicked(self):
         self.central_widget.setCurrentIndex(SETTINGS_PAGE)
+
+    def stats_button_clicked(self):
+        self.stats_dao = StatsDao()
+
+        #updating stats window
+        time = self.stats_dao.get_focus_on_date(datetime.now().strftime("%Y-%m-%d"))
+        self.stats_page.today_focus_label.setText(str(time)+"m\nToday focus")
+
+
+        self.central_widget.setCurrentIndex(STATS_PAGE)
 
     def update_timer_after_save(self):
         self.load_custom_times()

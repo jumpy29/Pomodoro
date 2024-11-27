@@ -277,4 +277,19 @@ class StatsDao:
                 return result is not None
 
 
+    def get_focus_on_date(self, date):
+        """Gets the total focus minutes for a specific date."""
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                SELECT focus_minutes 
+                FROM daily_stats 
+                WHERE date = ?
+            ''', (date,))
+            result = cursor.fetchone()
+            if result:
+                return result[0]  # Return the focus_minutes value from the first column
+            return 0
+
+
 

@@ -12,6 +12,12 @@ class SettingsWindow(QDialog):
         self.setWindowTitle("Settings")
         self.setGeometry(0, 0, 350, 250)
 
+        self.setStyleSheet("""
+            background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #fae1dd, stop:1 #f8edeb);
+            border-radius: 5px;
+            color: #495057;
+        """)
+
         # Main layout
         self.main_layout = QVBoxLayout(self)
 
