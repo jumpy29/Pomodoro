@@ -11,6 +11,7 @@ from datetime import datetime
 from math import floor
 from colors import PRIMARY, SECONDARY
 
+
 # File data index
 FOCUS_TIME = 0 
 BREAK_TIME = 1
@@ -60,6 +61,8 @@ class TimerApp(QMainWindow):
         self.central_widget.addWidget(self.settings_page)     # Index 1
         self.central_widget.addWidget(self.stats_page)        # Index 2
         
+        self.apply_styles()
+
         # Connect signals to functions
         self.timer.time_updated.connect(self.update_time_label)
         self.timer.timer_finished.connect(self.on_timer_finished)
@@ -70,11 +73,6 @@ class TimerApp(QMainWindow):
         layout.setSpacing(10)
         layout.setContentsMargins(10, 10, 10, 10)
         
-        timer_page.setStyleSheet(f"""
-            background: {PRIMARY};
-            border-radius: 5px;
-            color: {SECONDARY};
-        """)
 
         # Mode switch (Focus/Break)
         mode_switch_layout = QHBoxLayout()
@@ -84,12 +82,7 @@ class TimerApp(QMainWindow):
         self.focus_button = QPushButton("Focus", self)
         self.focus_button.setFixedWidth(100)
         self.focus_button.clicked.connect(self.focus_button_clicked)
-        self.focus_button.setStyleSheet(f"""
-            QPushButton{{
-            background: {SECONDARY};
-            color: {PRIMARY};
-            }}
-        """)
+        
         mode_switch_layout.addWidget(self.focus_button)
 
         self.break_button = QPushButton("Break", self)
@@ -112,12 +105,7 @@ class TimerApp(QMainWindow):
         self.start_stop_button.clicked.connect(self.start_stop_clicked)
         layout.addWidget(self.start_stop_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
         self.start_stop_button.setFixedSize(100, 40)
-        self.start_stop_button.setStyleSheet(f"""
-            QPushButton{{
-            background: {SECONDARY};
-            color: {PRIMARY};
-            }}
-        """)
+
         
         #contains settings and stats button
         self.button_layout = QHBoxLayout()
@@ -292,6 +280,28 @@ class TimerApp(QMainWindow):
         except:
             self.focus_time = 25
             self.break_time = 5
+
+    def apply_styles(self):
+        self.timer_page.setStyleSheet(f"""
+            background: {PRIMARY};
+            border-radius: 5px;
+            color: {SECONDARY};
+        """)
+
+        self.focus_button.setStyleSheet(f"""
+            QPushButton{{
+            background: {SECONDARY};
+            color: {PRIMARY};
+            }}
+        """)
+
+        self.start_stop_button.setStyleSheet(f"""
+            QPushButton{{
+            background: {SECONDARY};
+            color: {PRIMARY};
+            }}
+        """)
+
 
 def main():
     app = QApplication(sys.argv)

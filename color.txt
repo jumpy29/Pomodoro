@@ -1,0 +1,25 @@
+#BLUE
+PRIMARY = '#ECECEB' #ligher
+SECONDARY = '#189AB4' #darker
+STAT_COLOR = '#189AB4' 
+
+
+#PINK
+PRIMARY = '#fae1dd' #ligher
+SECONDARY = '#495057' #darker
+STAT_COLOR = '#F79489'
+
+#PURPLE
+PRIMARY = '#C3C7DF' #ligher
+SECONDARY = '#695E93' #darker
+STAT_COLOR = '#8155BA' 
+
+#RED
+PRIMARY = '#E43D40' #ligher
+SECONDARY = '#FABEC0' #darker
+STAT_COLOR = '#F85C70' 
+
+#WOOD
+PRIMARY = '#E9DAC4' #ligher
+SECONDARY = '#875F59' #darker
+STAT_COLOR = '#1C0803' 
