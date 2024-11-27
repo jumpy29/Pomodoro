@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import (
     QDialog, QHBoxLayout, QVBoxLayout, QLabel, QSpinBox, QPushButton
 )
 from PyQt6.QtCore import Qt, pyqtSignal
+from colors import PRIMARY, SECONDARY
 
 
 class SettingsWindow(QDialog):
@@ -12,10 +13,10 @@ class SettingsWindow(QDialog):
         self.setWindowTitle("Settings")
         self.setGeometry(0, 0, 350, 250)
 
-        self.setStyleSheet("""
-            background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #fae1dd, stop:1 #f8edeb);
+        self.setStyleSheet(f"""
+            background: {PRIMARY};
             border-radius: 5px;
-            color: #495057;
+            color: {SECONDARY};
         """)
 
         # Main layout

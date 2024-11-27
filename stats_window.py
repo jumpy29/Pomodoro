@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel
 from PyQt6.QtCore import Qt  # For alignment flags
+from colors import PRIMARY, SECONDARY, STAT_COLOR
 
 class StatsDashboard(QWidget):
     def __init__(self):
@@ -33,8 +34,9 @@ class StatsDashboard(QWidget):
         # Widgets for "Today Stats"
         self.today_focus_label = QLabel("0h0m")
         #dark pink
-        self.today_focus_label.setStyleSheet('''
-            color: #F79489;
+        #F79489
+        self.today_focus_label.setStyleSheet(f'''
+            color: {STAT_COLOR};
             font-family: 'Courier New';
             font-size: 26px;
             font-weight: bold;
@@ -54,8 +56,8 @@ class StatsDashboard(QWidget):
 
         # Widgets for "Monthly Best"
         self.monthly_best_focus_label = QLabel("5h10m")
-        self.monthly_best_focus_label.setStyleSheet('''
-            color: #F79489;
+        self.monthly_best_focus_label.setStyleSheet(f'''
+            color: {STAT_COLOR};
             font-family: 'Courier New';
             font-size: 26px;
             font-weight: bold;
@@ -88,8 +90,8 @@ class StatsDashboard(QWidget):
         self.total_monthly_label = QLabel("MONTH TOTAL")
         self.total_monthly_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.total_monthly_focus.setStyleSheet('''
-            color: #F79489;
+        self.total_monthly_focus.setStyleSheet(f'''
+            color: {STAT_COLOR};
             font-size: 26px;
             font-weight: bold;
         ''')

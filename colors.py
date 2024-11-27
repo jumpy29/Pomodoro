@@ -1,0 +1,4 @@
+
+PRIMARY = '#D4F1F4'
+SECONDARY = '#05445E'
+STAT_COLOR = '#189AB4' #bold primary

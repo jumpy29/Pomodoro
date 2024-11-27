@@ -9,6 +9,7 @@ from stats_window import StatsDashboard
 from stats_dao import StatsDao
 from datetime import datetime
 from math import floor
+from colors import PRIMARY, SECONDARY
 
 # File data index
 FOCUS_TIME = 0 
@@ -69,10 +70,10 @@ class TimerApp(QMainWindow):
         layout.setSpacing(10)
         layout.setContentsMargins(10, 10, 10, 10)
         
-        timer_page.setStyleSheet("""
-            background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #fae1dd, stop:1 #f8edeb);
+        timer_page.setStyleSheet(f"""
+            background: {PRIMARY};
             border-radius: 5px;
-            color: #495057;
+            color: {SECONDARY};
         """)
 
         # Mode switch (Focus/Break)
@@ -83,11 +84,11 @@ class TimerApp(QMainWindow):
         self.focus_button = QPushButton("Focus", self)
         self.focus_button.setFixedWidth(100)
         self.focus_button.clicked.connect(self.focus_button_clicked)
-        self.focus_button.setStyleSheet("""
-            QPushButton{
-            background: #495057;
-            color: #fae1dd;
-            }
+        self.focus_button.setStyleSheet(f"""
+            QPushButton{{
+            background: {SECONDARY};
+            color: {PRIMARY};
+            }}
         """)
         mode_switch_layout.addWidget(self.focus_button)
 
@@ -111,11 +112,11 @@ class TimerApp(QMainWindow):
         self.start_stop_button.clicked.connect(self.start_stop_clicked)
         layout.addWidget(self.start_stop_button, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
         self.start_stop_button.setFixedSize(100, 40)
-        self.start_stop_button.setStyleSheet("""
-            QPushButton{
-            background: #495057;
-            color: #fae1dd;
-            }
+        self.start_stop_button.setStyleSheet(f"""
+            QPushButton{{
+            background: {SECONDARY};
+            color: {PRIMARY};
+            }}
         """)
         
         #contains settings and stats button
@@ -161,17 +162,17 @@ class TimerApp(QMainWindow):
         self.timer.set_time(self.focus_time)
         self.play_toggle_sound()
         self.update_button_after_stopped()  # Updating text and size of button
-        self.break_button.setStyleSheet("""
-            QPushButton{
-                background: #fae1dd;
-                color: #495057            
-            }
+        self.break_button.setStyleSheet(f"""
+            QPushButton{{
+                background: {PRIMARY};
+                color: {SECONDARY}            
+            }}
         """)
-        self.focus_button.setStyleSheet("""
-            QPushButton{
-            background: #495057;
-            color: #fae1dd;
-            }
+        self.focus_button.setStyleSheet(f"""
+            QPushButton{{
+            background: {SECONDARY};
+            color: {PRIMARY};
+            }}
         """)
 
     def break_button_clicked(self):
@@ -179,17 +180,17 @@ class TimerApp(QMainWindow):
         self.timer.set_time(self.break_time)
         self.play_toggle_sound()
         self.update_button_after_stopped()  # Updating text and size of button
-        self.focus_button.setStyleSheet("""
-            QPushButton{
-                background: #fae1dd;
-                color: #495057            
-            }
+        self.focus_button.setStyleSheet(f"""
+            QPushButton{{
+                background: {PRIMARY};
+                color: {SECONDARY}            
+            }}
         """)
-        self.break_button.setStyleSheet("""
-            QPushButton{
-            background: #495057;
-            color: #fae1dd;
-            }
+        self.break_button.setStyleSheet(f"""
+            QPushButton{{
+            background: {SECONDARY};
+            color: {PRIMARY};
+            }}
         """)
         
     def settings_clicked(self):
